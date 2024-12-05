@@ -39,11 +39,17 @@ Writer::~Writer() {
 }
 
 void Writer::start() {
-	// TODO: starts a Writer thread
+	pthread_create(&t, 0, &Writer::process, (void*)this);
 }
 
 void* Writer::process(void* arg) {
-	// TODO: implements the Writer's work
+	Writer *writer = static_cast<Writer *>(arg);
+	while (writer->expected_lines--) {
+		Item *it = writer->output_queue->dequeue();
+		writer->ofs << *it;
+		delete it;
+	}
+	return nullptr;
 }
 
 #endif // WRITER_HPP

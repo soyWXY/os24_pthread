@@ -13,6 +13,8 @@ public:
 
 	// to cancel the pthread work
 	virtual int cancel();
+
+	int detach();
 protected:
 	pthread_t t;
 };
@@ -23,6 +25,10 @@ int Thread::join() {
 
 int Thread::cancel() {
 	return pthread_cancel(t);
+}
+
+int Thread::detach() {
+	return pthread_detach(t);
 }
 
 #endif // THREAD_HPP
