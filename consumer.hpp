@@ -45,26 +45,19 @@ void Consumer::start() {
 
 int Consumer::cancel() {
 	is_cancel = true;
-	int ret = pthread_cancel(t);
-	return ret;
+	return 0;
 }
 
 void* Consumer::process(void* arg) {
 	Consumer* consumer = (Consumer*)arg;
 
-	pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, nullptr);
-
 	while (!consumer->is_cancel) {
-		pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, nullptr);
-
 		Item *it = consumer->worker_queue->dequeue();
 		if (!it) {
 			continue;
 		}
 		it->val = consumer->transformer->consumer_transform(it->opcode, it->val);
 		consumer->output_queue->enqueue(it);
-
-		pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
 	}
 
 	delete consumer;
