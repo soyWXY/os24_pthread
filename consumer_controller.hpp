@@ -75,10 +75,10 @@ ConsumerController::~ConsumerController() {
 	// controller thread must be joined beforehood,
 	// or `consumers` can be accessed by both controller
 	// and controller thread
-	for (Consumer *c: consumers)
-		c->cancel();
-	for (Consumer *c: consumers)
+	for (Consumer *c: consumers) {
 		c->detach();
+		c->cancel();
+	}
 
 	// free consumer pointer and end consumer thread
 	// operation on consumer is PROHIBITED after this
@@ -109,8 +109,8 @@ void* ConsumerController::process(void* arg) {
 		} else if (ratio < ctrler->low_threshold &&
 				   ctrler->consumers.size() > 1) {
 			Consumer *c = ctrler->consumers.back();
-			c->cancel();
 			c->detach();
+			c->cancel();
 			ctrler->consumers.pop_back();
 			std::cout << "Scaling down consumers, total # = "
 					  << ctrler->consumers.size() << std::endl;
